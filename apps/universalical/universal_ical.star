@@ -18,6 +18,7 @@ def main(config):
     )
 
     hours_window = int(config.str(P_HOURS_TO_CONSIDER, DEFAULT_HOURS_TO_CONSIDER))
+    cache_ttl = int(config.str(P_CACHE_SECONDS, DEFAULT_CACHE_SECONDS))
 
     # Read color settings
     colors = {
@@ -53,6 +54,7 @@ def main(config):
     ics = http.post(
         url = SERVICE_URL,
         json_body = {"icsUrl": ics_url, "tz": timezone, "showInProgress": show_in_progress, "includeAllDayEvents": include_all_day, "onlyShowAllDayEvents": only_show_all_day},
+        ttl_seconds = cache_ttl,
     )
 
     if (ics.status_code != 200):
@@ -362,6 +364,13 @@ def get_schema():
                 default = DEFAULT_HOURS_TO_CONSIDER,
                 icon = "clock",
             ),
+            schema.Text(
+                id = P_CACHE_SECONDS,
+                name = "Cache Duration (Seconds)",
+                desc = "How long to cache calendar data before refreshing.",
+                default = DEFAULT_CACHE_SECONDS,
+                icon = "clock",
+            ),
             schema.Toggle(
                 id = P_SHOW_FULL_NAMES,
                 name = "Show Full Names",
@@ -437,6 +446,7 @@ P_SHOW_FULL_NAMES = "show_full_names"
 P_SHOW_IN_PROGRESS = "show_in_progress"
 P_ALL_DAY = "all_day"
 P_USE_24_HOUR = "use_24_hour"
+P_CACHE_SECONDS = "cache_seconds"
 
 # Color parameter keys
 P_PRIMARY_COLOR = "primary_color"
@@ -450,6 +460,7 @@ DEFAULT_SHOW_FULL_NAMES = False
 DEFAULT_SHOW_IN_PROGRESS = True
 DEFAULT_TIMEZONE = "America/New_York"
 DEFAULT_USE_24_HOUR = False
+DEFAULT_CACHE_SECONDS = "300"
 
 # Default colors
 DEFAULT_PRIMARY_COLOR = "#ff83f3"
